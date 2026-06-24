@@ -30,8 +30,11 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
       <div className="absolute top-4 left-4 flex flex-col gap-3 pointer-events-auto">
         <HPBar hp={state.hp} maxHp={state.maxHp} />
 
-        <div className="flex items-center gap-2 bg-black/70 rounded-lg px-3 py-2 border border-white/10">
-          <Swords className="w-5 h-5 text-yellow-400" />
+        <div
+          className="flex items-center gap-2 rounded-lg px-3 py-2 border border-white/10"
+          style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+        >
+          <Swords className="w-5 h-5" style={{ color: CONFIG.COLOR_UI_ICON_WAVE }} />
           <div className="flex flex-col">
             <span className="text-white text-sm font-bold">
               第 {state.wave} 波
@@ -42,7 +45,10 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
           </div>
         </div>
 
-        <div className="bg-black/70 rounded-lg px-3 py-2 border border-white/10">
+        <div
+          className="rounded-lg px-3 py-2 border border-white/10"
+          style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+        >
           <span className="text-white/60 text-xs">存活时间: </span>
           <span className="text-white text-sm font-mono font-bold">{formatTime(state.survivalTime)}</span>
         </div>
@@ -58,7 +64,10 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
 
       {/* 当前建造模式提示 */}
       {state.buildType && (
-        <div className="absolute top-4 right-4 bg-black/70 rounded-lg px-4 py-2 border border-white/20">
+        <div
+          className="absolute top-4 right-4 rounded-lg px-4 py-2 border border-white/20"
+          style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+        >
           <span className="text-white text-sm">
             建造模式: {' '}
             <span

@@ -19,7 +19,7 @@ export class UIRenderer {
     ctx.fillRect(gridX, gridY, gridSize, gridSize);
 
     // 边框
-    ctx.strokeStyle = canBuild ? '#2ecc71' : '#e74c3c';
+    ctx.strokeStyle = canBuild ? CONFIG.COLOR_PREVIEW_BORDER_VALID : CONFIG.COLOR_PREVIEW_BORDER_INVALID;
     ctx.lineWidth = 2;
     ctx.strokeRect(gridX, gridY, gridSize, gridSize);
 

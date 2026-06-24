@@ -1,3 +1,4 @@
+import { CONFIG, hexToRgba } from '@/game/engine/Config';
 import { RotateCcw, Skull, Clock, Swords } from 'lucide-react';
 
 interface GameOverScreenProps {
@@ -18,11 +19,14 @@ function formatTime(ms: number): string {
 
 export default function GameOverScreen({ killCount, survivalTime, onRestart }: GameOverScreenProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1a2e]/95">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: hexToRgba(CONFIG.COLOR_BG, 0.95) }}
+    >
       <div className="flex flex-col items-center gap-6 max-w-md px-8">
         {/* 标题 */}
         <div className="flex flex-col items-center gap-2">
-          <Skull className="w-16 h-16 text-[#e74c3c]" />
+          <Skull className="w-16 h-16" style={{ color: CONFIG.COLOR_ENEMY }} />
           <h1 className="text-4xl font-black text-white">游戏结束</h1>
           <p className="text-white/60">你的阵地已被敌人攻破</p>
         </div>
@@ -31,7 +35,7 @@ export default function GameOverScreen({ killCount, survivalTime, onRestart }: G
         <div className="w-full bg-black/50 rounded-xl p-6 border border-white/10 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Clock className="w-6 h-6 text-[#4ecca3]" />
+              <Clock className="w-6 h-6" style={{ color: CONFIG.COLOR_PLAYER }} />
               <span className="text-white/70">存活时间</span>
             </div>
             <span className="text-white text-xl font-mono font-bold">{formatTime(survivalTime)}</span>
@@ -41,7 +45,7 @@ export default function GameOverScreen({ killCount, survivalTime, onRestart }: G
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Swords className="w-6 h-6 text-[#f1c40f]" />
+              <Swords className="w-6 h-6" style={{ color: CONFIG.COLOR_BULLET }} />
               <span className="text-white/70">击杀数</span>
             </div>
             <span className="text-white text-xl font-mono font-bold">{killCount}</span>
@@ -51,7 +55,14 @@ export default function GameOverScreen({ killCount, survivalTime, onRestart }: G
         {/* 重新开始按钮 */}
         <button
           onClick={onRestart}
-          className="flex items-center gap-3 px-10 py-4 bg-[#4ecca3] hover:bg-[#3dbb95] text-[#1a1a2e] font-black text-lg rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#4ecca3]/30"
+          className="flex items-center gap-3 px-10 py-4 font-black text-lg rounded-xl transition-all hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: CONFIG.COLOR_PLAYER,
+            color: CONFIG.COLOR_BG,
+            boxShadow: `0 10px 15px -3px ${hexToRgba(CONFIG.COLOR_PLAYER, 0.3)}`,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = CONFIG.COLOR_PLAYER_SHADE; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = CONFIG.COLOR_PLAYER; }}
         >
           <RotateCcw className="w-5 h-5" />
           重新开始

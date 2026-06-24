@@ -11,6 +11,7 @@ export class Wall extends Building {
     super(gridX, gridY, CONFIG.WALL_SIZE, CONFIG.WALL_SIZE, CONFIG.WALL_HP);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(_dt: number) {
     // 墙体不需要每帧更新
   }
@@ -26,12 +27,12 @@ export class Wall extends Building {
     ctx.fillRect(screenX, screenY, this.width, this.height);
 
     // 边框
-    ctx.strokeStyle = '#7a6548';
+    ctx.strokeStyle = CONFIG.COLOR_WALL_STROKE;
     ctx.lineWidth = 2;
     ctx.strokeRect(screenX + 1, screenY + 1, this.width - 2, this.height - 2);
 
     // 砖块纹理
-    ctx.strokeStyle = '#7d6849';
+    ctx.strokeStyle = CONFIG.COLOR_WALL_DETAIL;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(screenX + this.width / 2, screenY);
@@ -52,7 +53,7 @@ export class Wall extends Building {
       const barY = screenY - 6;
       const hpRatio = this.hp / this.maxHp;
 
-      ctx.fillStyle = '#333';
+      ctx.fillStyle = CONFIG.COLOR_HP_BG;
       ctx.fillRect(barX, barY, barWidth, barHeight);
       ctx.fillStyle = hpRatio > 0.3 ? CONFIG.COLOR_HP_GREEN : CONFIG.COLOR_HP_RED;
       ctx.fillRect(barX, barY, barWidth * hpRatio, barHeight);

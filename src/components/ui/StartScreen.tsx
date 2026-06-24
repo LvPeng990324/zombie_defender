@@ -1,3 +1,4 @@
+import { CONFIG, hexToRgba } from '@/game/engine/Config';
 import { Crosshair, Shield, Move, MousePointer } from 'lucide-react';
 
 interface StartScreenProps {
@@ -6,12 +7,15 @@ interface StartScreenProps {
 
 export default function StartScreen({ onStart }: StartScreenProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1a2e]/95">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ backgroundColor: hexToRgba(CONFIG.COLOR_BG, 0.95) }}
+    >
       <div className="flex flex-col items-center gap-8 max-w-lg px-8">
         {/* 标题 */}
         <div className="flex flex-col items-center gap-3">
           <h1 className="text-5xl font-black text-white tracking-tight">
-            防守<span className="text-[#4ecca3]">阵地</span>
+            防守<span style={{ color: CONFIG.COLOR_PLAYER }}>阵地</span>
           </h1>
           <p className="text-white/60 text-lg">建造防御工事，抵御敌人进攻</p>
         </div>
@@ -22,7 +26,7 @@ export default function StartScreen({ onStart }: StartScreenProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <Move className="w-5 h-5 text-[#4ecca3]" />
+                <Move className="w-5 h-5" style={{ color: CONFIG.COLOR_PLAYER }} />
               </div>
               <div>
                 <p className="text-white text-sm font-bold">WASD / 方向键</p>
@@ -32,7 +36,7 @@ export default function StartScreen({ onStart }: StartScreenProps) {
 
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <MousePointer className="w-5 h-5 text-[#f1c40f]" />
+                <MousePointer className="w-5 h-5" style={{ color: CONFIG.COLOR_BULLET }} />
               </div>
               <div>
                 <p className="text-white text-sm font-bold">鼠标移动 + 左键</p>
@@ -42,7 +46,7 @@ export default function StartScreen({ onStart }: StartScreenProps) {
 
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-[#8b7355]" />
+                <Shield className="w-5 h-5" style={{ color: CONFIG.COLOR_WALL }} />
               </div>
               <div>
                 <p className="text-white text-sm font-bold">数字键 1</p>
@@ -52,7 +56,7 @@ export default function StartScreen({ onStart }: StartScreenProps) {
 
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <Crosshair className="w-5 h-5 text-[#3498db]" />
+                <Crosshair className="w-5 h-5" style={{ color: CONFIG.COLOR_TURRET }} />
               </div>
               <div>
                 <p className="text-white text-sm font-bold">数字键 2</p>
@@ -65,7 +69,14 @@ export default function StartScreen({ onStart }: StartScreenProps) {
         {/* 开始按钮 */}
         <button
           onClick={onStart}
-          className="px-12 py-4 bg-[#4ecca3] hover:bg-[#3dbb95] text-[#1a1a2e] font-black text-xl rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#4ecca3]/30"
+          className="px-12 py-4 font-black text-xl rounded-xl transition-all hover:scale-105 active:scale-95"
+          style={{
+            backgroundColor: CONFIG.COLOR_PLAYER,
+            color: CONFIG.COLOR_BG,
+            boxShadow: `0 10px 15px -3px ${hexToRgba(CONFIG.COLOR_PLAYER, 0.3)}`,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = CONFIG.COLOR_PLAYER_SHADE; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = CONFIG.COLOR_PLAYER; }}
         >
           点击开始游戏
         </button>

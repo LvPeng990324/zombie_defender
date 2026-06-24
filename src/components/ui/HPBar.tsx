@@ -7,10 +7,13 @@ interface HPBarProps {
 
 export default function HPBar({ hp, maxHp }: HPBarProps) {
   const ratio = Math.max(0, hp / maxHp);
-  const color = ratio > 0.5 ? CONFIG.COLOR_HP_GREEN : ratio > 0.25 ? '#f39c12' : CONFIG.COLOR_HP_RED;
+  const color = ratio > 0.5 ? CONFIG.COLOR_HP_GREEN : ratio > 0.25 ? CONFIG.COLOR_HP_WARNING : CONFIG.COLOR_HP_RED;
 
   return (
-    <div className="flex flex-col gap-1 min-w-[200px]">
+    <div
+      className="flex flex-col gap-1 min-w-[200px] rounded-lg px-3 py-2 border border-white/10"
+      style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+    >
       <div className="flex justify-between items-center">
         <span className="text-white text-sm font-bold">HP</span>
         <span className="text-white text-sm font-mono">{Math.ceil(hp)} / {maxHp}</span>

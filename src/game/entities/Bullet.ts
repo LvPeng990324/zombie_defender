@@ -41,7 +41,7 @@ export class Bullet extends Entity {
     ctx.fill();
 
     // 光晕效果
-    ctx.fillStyle = 'rgba(241,196,15,0.3)';
+    ctx.fillStyle = CONFIG.COLOR_BULLET_TRAIL;
     ctx.beginPath();
     ctx.arc(screenX + this.width / 2, screenY + this.height / 2, this.width, 0, Math.PI * 2);
     ctx.fill();

@@ -59,6 +59,11 @@
 │   ├── App.css                # 全局游戏容器与 body 样式
 │   ├── main.tsx               # React 应用入口（StrictMode + BrowserRouter）
 │   ├── index.css              # Tailwind 指令 + shadcn CSS 变量主题
+│   ├── config/                # 游戏数值与配色 JSON 配置文件
+│   │   ├── game.json          # 玩家、子弹、敌人、地图等通用数值
+│   │   ├── buildings.json     # 墙体、机枪塔属性
+│   │   ├── colors.json        # 实体、UI、血条、预览等配色
+│   │   └── waves.json         # 波次规则与缩放
 │   ├── components/ui/         # UI 组件（含 shadcn 组件与游戏专用 UI）
 │   │   ├── GameUI.tsx         # 游戏中 HUD（HP、波次、击杀、建造菜单）
 │   │   ├── StartScreen.tsx    # 开始界面
@@ -170,7 +175,7 @@ Tauri 配置：
    - `src/components/ui/` 负责 React 层面的覆盖 UI。
 2. **渲染方式**：游戏世界使用原生 Canvas 2D API 逐帧渲染，UI 覆盖层使用 React + Tailwind CSS。
 3. **状态同步**：`GameEngine` 通过 `onStateChange` 回调将精简的 `GameState` 传回 `App.tsx`，再驱动 React UI 更新。
-4. **配置集中**：所有游戏数值、颜色集中在 `src/game/engine/Config.ts` 中维护。
+4. **配置集中**：游戏数值与配色以 JSON 形式存放在 `src/config/*.json` 中；`src/game/engine/Config.ts` 负责聚合这些 JSON 并导出统一的 `CONFIG` 对象与 `BuildType` 类型，保持原有导入接口不变。
 
 ---
 
@@ -228,6 +233,8 @@ Tauri 配置：
 - 打包指南：`PACKAGE_GUIDE.md`
 - 前端入口：`index.html` → `src/main.tsx` → `src/App.tsx`
 - 游戏入口：`src/game/GameCanvas.tsx` → `src/game/engine/GameEngine.ts`
-- 游戏配置：`src/game/engine/Config.ts`
+- 游戏配置：
+  - JSON 源文件：`src/config/game.json`、`src/config/buildings.json`、`src/config/colors.json`、`src/config/waves.json`
+  - 聚合入口：`src/game/engine/Config.ts`
 - Tauri 配置：`src-tauri/tauri.conf.json`
 - 构建配置：`vite.config.ts`、`tailwind.config.js`、`eslint.config.js`

@@ -1,4 +1,4 @@
-import { CONFIG } from '@/game/engine/Config';
+import { CONFIG, hexToRgba } from '@/game/engine/Config';
 import type { BuildType } from '@/game/engine/Config';
 import { Shield, Crosshair } from 'lucide-react';
 
@@ -8,15 +8,23 @@ interface BuildMenuProps {
 }
 
 export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuProps) {
+  const wallSelected = buildType === 'wall';
+  const turretSelected = buildType === 'turret';
+
   return (
-    <div className="flex items-center gap-3 bg-black/70 rounded-xl px-4 py-3 border border-white/10">
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3 border border-white/10"
+      style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+    >
       <button
-        onClick={() => onSelectBuildType(buildType === 'wall' ? null : 'wall')}
+        onClick={() => onSelectBuildType(wallSelected ? null : 'wall')}
         className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg border-2 transition-all ${
-          buildType === 'wall'
-            ? 'border-[#8b7355] bg-[#8b7355]/30 scale-105'
-            : 'border-white/20 bg-white/5 hover:bg-white/10'
+          wallSelected ? 'scale-105' : 'border-white/20 bg-white/5 hover:bg-white/10'
         }`}
+        style={wallSelected ? {
+          borderColor: CONFIG.COLOR_WALL,
+          backgroundColor: hexToRgba(CONFIG.COLOR_WALL, 0.3),
+        } : undefined}
       >
         <Shield className="w-6 h-6" style={{ color: CONFIG.COLOR_WALL }} />
         <span className="text-white text-xs font-bold">墙体</span>
@@ -24,12 +32,14 @@ export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuPro
       </button>
 
       <button
-        onClick={() => onSelectBuildType(buildType === 'turret' ? null : 'turret')}
+        onClick={() => onSelectBuildType(turretSelected ? null : 'turret')}
         className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg border-2 transition-all ${
-          buildType === 'turret'
-            ? 'border-[#3498db] bg-[#3498db]/30 scale-105'
-            : 'border-white/20 bg-white/5 hover:bg-white/10'
+          turretSelected ? 'scale-105' : 'border-white/20 bg-white/5 hover:bg-white/10'
         }`}
+        style={turretSelected ? {
+          borderColor: CONFIG.COLOR_TURRET,
+          backgroundColor: hexToRgba(CONFIG.COLOR_TURRET, 0.3),
+        } : undefined}
       >
         <Crosshair className="w-6 h-6" style={{ color: CONFIG.COLOR_TURRET }} />
         <span className="text-white text-xs font-bold">机枪塔</span>

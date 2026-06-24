@@ -1,0 +1,35 @@
+{
+  "COLOR_BG": "#1a1a2e",
+  "COLOR_GRID": "#16213e",
+
+  "COLOR_PLAYER": "#4ecca3",
+  "COLOR_PLAYER_SHADE": "#3dbb95",
+
+  "COLOR_ENEMY": "#e74c3c",
+  "COLOR_ENEMY_EYE": "#fff",
+
+  "COLOR_WALL": "#8b7355",
+  "COLOR_WALL_STROKE": "#7a6548",
+  "COLOR_WALL_DETAIL": "#7d6849",
+
+  "COLOR_TURRET": "#3498db",
+  "COLOR_TURRET_SHADE": "#2980b9",
+  "COLOR_TURRET_BARREL": "#ecf0f1",
+  "COLOR_TURRET_RANGE": "rgba(52,152,219,0.15)",
+
+  "COLOR_BULLET": "#f1c40f",
+  "COLOR_BULLET_TRAIL": "rgba(241,196,15,0.3)",
+
+  "COLOR_UI_PANEL": "rgba(0,0,0,0.7)",
+  "COLOR_UI_ICON_WAVE": "#f1c40f",
+
+  "COLOR_HP_GREEN": "#2ecc71",
+  "COLOR_HP_RED": "#e74c3c",
+  "COLOR_HP_WARNING": "#f39c12",
+  "COLOR_HP_BG": "#333",
+
+  "COLOR_PREVIEW_VALID": "rgba(46,204,113,0.4)",
+  "COLOR_PREVIEW_INVALID": "rgba(231,76,60,0.4)",
+  "COLOR_PREVIEW_BORDER_VALID": "#2ecc71",
+  "COLOR_PREVIEW_BORDER_INVALID": "#e74c3c"
+}

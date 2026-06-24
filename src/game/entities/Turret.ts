@@ -133,7 +133,7 @@ export class Turret extends Building {
     ctx.fill();
 
     // 底座
-    ctx.fillStyle = '#2980b9';
+    ctx.fillStyle = CONFIG.COLOR_TURRET_SHADE;
     ctx.beginPath();
     ctx.arc(
       screenX + this.width / 2,
@@ -152,7 +152,7 @@ export class Turret extends Building {
     ctx.restore();
 
     // 中心点
-    ctx.fillStyle = '#ecf0f1';
+    ctx.fillStyle = CONFIG.COLOR_TURRET_BARREL;
     ctx.beginPath();
     ctx.arc(screenX + this.width / 2, screenY + this.height / 2, 5, 0, Math.PI * 2);
     ctx.fill();
@@ -165,7 +165,7 @@ export class Turret extends Building {
       const barY = screenY - 6;
       const hpRatio = this.hp / this.maxHp;
 
-      ctx.fillStyle = '#333';
+      ctx.fillStyle = CONFIG.COLOR_HP_BG;
       ctx.fillRect(barX, barY, barWidth, barHeight);
       ctx.fillStyle = hpRatio > 0.3 ? CONFIG.COLOR_HP_GREEN : CONFIG.COLOR_HP_RED;
       ctx.fillRect(barX, barY, barWidth * hpRatio, barHeight);

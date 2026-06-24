@@ -235,7 +235,7 @@ export class Enemy extends Entity {
     ctx.fill();
 
     // 眼睛（朝向目标）
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = CONFIG.COLOR_ENEMY_EYE;
     const dx = this.targetX - this.centerX;
     const dy = this.targetY - this.centerY;
     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -257,7 +257,7 @@ export class Enemy extends Entity {
     const barY = screenY - 5;
     const hpRatio = this.hp / this.maxHp;
 
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = CONFIG.COLOR_HP_BG;
     ctx.fillRect(barX, barY, barWidth, barHeight);
     ctx.fillStyle = hpRatio > 0.3 ? CONFIG.COLOR_HP_GREEN : CONFIG.COLOR_HP_RED;
     ctx.fillRect(barX, barY, barWidth * hpRatio, barHeight);

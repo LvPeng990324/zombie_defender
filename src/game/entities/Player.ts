@@ -89,7 +89,7 @@ export class Player extends Entity {
 
     // 枪管（指示朝向）
     ctx.rotate(this.facingAngle);
-    ctx.fillStyle = '#3dbb95';
+    ctx.fillStyle = CONFIG.COLOR_PLAYER_SHADE;
     ctx.fillRect(this.width / 2 - 2, -3, 14, 6);
 
     ctx.restore();
