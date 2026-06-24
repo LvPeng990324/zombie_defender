@@ -5,7 +5,51 @@ import type { Player } from './Player';
 import type { Building } from './Building';
 import type { Wall } from './Wall';
 
-export type EnemyType = 'normal' | 'thin_monkey';
+export type EnemyType = 'normal' | 'thin_monkey' | 'fat';
+
+interface EnemyConfig {
+  size: number;
+  hp: number;
+  speed: number;
+  damage: number;
+  dropChance: number;
+  dropMin: number;
+  dropMax: number;
+  color: string;
+}
+
+const ENEMY_CONFIG_MAP: Record<EnemyType, EnemyConfig> = {
+  normal: {
+    size: CONFIG.normal.size,
+    hp: CONFIG.normal.hp,
+    speed: CONFIG.normal.speed,
+    damage: CONFIG.normal.damage,
+    dropChance: CONFIG.normal.dropChance,
+    dropMin: CONFIG.normal.dropMin,
+    dropMax: CONFIG.normal.dropMax,
+    color: CONFIG.COLOR_ENEMY,
+  },
+  thin_monkey: {
+    size: CONFIG.thin_monkey.size,
+    hp: CONFIG.thin_monkey.hp,
+    speed: CONFIG.thin_monkey.speed,
+    damage: CONFIG.thin_monkey.damage,
+    dropChance: CONFIG.thin_monkey.dropChance,
+    dropMin: CONFIG.thin_monkey.dropMin,
+    dropMax: CONFIG.thin_monkey.dropMax,
+    color: CONFIG.COLOR_THIN_MONKEY,
+  },
+  fat: {
+    size: CONFIG.fat.size,
+    hp: CONFIG.fat.hp,
+    speed: CONFIG.fat.speed,
+    damage: CONFIG.fat.damage,
+    dropChance: CONFIG.fat.dropChance,
+    dropMin: CONFIG.fat.dropMin,
+    dropMax: CONFIG.fat.dropMax,
+    color: CONFIG.COLOR_FAT,
+  },
+};
 
 export class Enemy extends Entity {
   enemyType: EnemyType;
@@ -23,22 +67,16 @@ export class Enemy extends Entity {
   private targetUpdateTimer: number = 0;
 
   constructor(x: number, y: number, type: EnemyType = 'normal') {
-    const isThin = type === 'thin_monkey';
-    super(
-      x,
-      y,
-      isThin ? CONFIG.thin_monkey.size : CONFIG.normal.size,
-      isThin ? CONFIG.thin_monkey.size : CONFIG.normal.size,
-      isThin ? CONFIG.thin_monkey.hp : CONFIG.normal.hp
-    );
+    const cfg = ENEMY_CONFIG_MAP[type];
+    super(x, y, cfg.size, cfg.size, cfg.hp);
 
     this.enemyType = type;
-    this.speed = isThin ? CONFIG.thin_monkey.speed : CONFIG.normal.speed;
-    this.damage = isThin ? CONFIG.thin_monkey.damage : CONFIG.normal.damage;
-    this.dropChance = isThin ? CONFIG.thin_monkey.dropChance : CONFIG.normal.dropChance;
-    this.dropMin = isThin ? CONFIG.thin_monkey.dropMin : CONFIG.normal.dropMin;
-    this.dropMax = isThin ? CONFIG.thin_monkey.dropMax : CONFIG.normal.dropMax;
-    this.color = isThin ? CONFIG.COLOR_THIN_MONKEY : CONFIG.COLOR_ENEMY;
+    this.speed = cfg.speed;
+    this.damage = cfg.damage;
+    this.dropChance = cfg.dropChance;
+    this.dropMin = cfg.dropMin;
+    this.dropMax = cfg.dropMax;
+    this.color = cfg.color;
   }
 
   update(dt: number, player?: Player, buildings?: Building[]) {
@@ -256,20 +294,22 @@ export class Enemy extends Entity {
     ctx.closePath();
     ctx.fill();
 
-    // 眼睛（朝向目标）
+    // 眼睛（朝向目标），位置按体型比例缩放
     ctx.fillStyle = CONFIG.COLOR_ENEMY_EYE;
     const dx = this.targetX - this.centerX;
     const dy = this.targetY - this.centerY;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    // 眼睛偏移量固定为朝向目标的方向，最大 2.5px，避免目标越远眼睛离身体越远
-    const maxEyeOffset = 2.5;
+    // 眼睛偏移量固定为朝向目标的方向，最大为体宽的一定比例，避免目标越远眼睛离身体越远
+    const maxEyeOffset = this.width * 0.14;
     const eyeOffsetX = dist > 0 ? (dx / dist) * maxEyeOffset : 0;
     const eyeOffsetY = dist > 0 ? (dy / dist) * maxEyeOffset : 0;
+    const eyeRadius = this.width * 0.17;
+    const eyeY = screenY + this.height * 0.39;
     ctx.beginPath();
-    ctx.arc(screenX + 5 + eyeOffsetX, screenY + 7 + eyeOffsetY, 3, 0, Math.PI * 2);
+    ctx.arc(screenX + this.width * 0.28 + eyeOffsetX, eyeY + eyeOffsetY, eyeRadius, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(screenX + 13 + eyeOffsetX, screenY + 7 + eyeOffsetY, 3, 0, Math.PI * 2);
+    ctx.arc(screenX + this.width * 0.72 + eyeOffsetX, eyeY + eyeOffsetY, eyeRadius, 0, Math.PI * 2);
     ctx.fill();
 
     // HP条

@@ -64,11 +64,12 @@ export class SpawnSystem {
         y = 0;
     }
 
-    const type: EnemyType =
-      this.wave >= CONFIG.thin_monkey.minWave &&
-      Math.random() < CONFIG.thin_monkey.spawnChance
-        ? 'thin_monkey'
-        : 'normal';
+    let type: EnemyType = 'normal';
+    if (this.wave >= CONFIG.fat.minWave && Math.random() < CONFIG.fat.spawnChance) {
+      type = 'fat';
+    } else if (this.wave >= CONFIG.thin_monkey.minWave && Math.random() < CONFIG.thin_monkey.spawnChance) {
+      type = 'thin_monkey';
+    }
 
     return new Enemy(x, y, type);
   }
