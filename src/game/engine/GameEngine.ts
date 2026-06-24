@@ -230,7 +230,7 @@ export class GameEngine {
             bullet.alive = false;
             if (!enemy.alive) {
               this.killCount++;
-              this.addMaterialDrop(enemy.centerX, enemy.centerY);
+              this.addMaterialDrop(enemy);
             }
             break;
           }
@@ -248,7 +248,7 @@ export class GameEngine {
             bullet.alive = false;
             if (!enemy.alive) {
               this.killCount++;
-              this.addMaterialDrop(enemy.centerX, enemy.centerY);
+              this.addMaterialDrop(enemy);
             }
             break;
           }
@@ -408,13 +408,15 @@ export class GameEngine {
   }
 
   // 击杀敌人时概率掉落建材（直接加到玩家身上）并在死亡位置显示浮动提示
-  private addMaterialDrop(x: number, y: number) {
-    if (Math.random() < CONFIG.MATERIAL_DROP_CHANCE) {
+  private addMaterialDrop(enemy: Enemy) {
+    if (Math.random() < enemy.dropChance) {
       const amount = Math.floor(
-        Math.random() * (CONFIG.MATERIAL_DROP_MAX - CONFIG.MATERIAL_DROP_MIN + 1)
-      ) + CONFIG.MATERIAL_DROP_MIN;
+        Math.random() * (enemy.dropMax - enemy.dropMin + 1)
+      ) + enemy.dropMin;
       this.materials += amount;
-      this.floatingTexts.push(new FloatingText(x, y, `+${amount}`));
+      this.floatingTexts.push(
+        new FloatingText(enemy.centerX, enemy.centerY, `+${amount}`)
+      );
     }
   }
 

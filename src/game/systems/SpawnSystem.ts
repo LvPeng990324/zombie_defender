@@ -1,5 +1,6 @@
 import { CONFIG } from '../engine/Config';
 import { Enemy } from '../entities/Enemy';
+import type { EnemyType } from '../entities/Enemy';
 
 export class SpawnSystem {
   private spawnTimer: number = 0;
@@ -63,7 +64,13 @@ export class SpawnSystem {
         y = 0;
     }
 
-    return new Enemy(x, y);
+    const type: EnemyType =
+      this.wave >= CONFIG.THIN_MONKEY_MIN_WAVE &&
+      Math.random() < CONFIG.THIN_MONKEY_SPAWN_CHANCE
+        ? 'thin_monkey'
+        : 'normal';
+
+    return new Enemy(x, y, type);
   }
 
   getWave(): number {

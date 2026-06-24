@@ -5,9 +5,16 @@ import type { Player } from './Player';
 import type { Building } from './Building';
 import type { Wall } from './Wall';
 
+export type EnemyType = 'normal' | 'thin_monkey';
+
 export class Enemy extends Entity {
-  speed: number = CONFIG.ENEMY_SPEED;
-  damage: number = CONFIG.ENEMY_DAMAGE;
+  enemyType: EnemyType;
+  speed: number;
+  damage: number;
+  dropChance: number;
+  dropMin: number;
+  dropMax: number;
+  color: string;
   attackCooldown: number = 0;
   vx: number = 0;
   vy: number = 0;
@@ -15,8 +22,23 @@ export class Enemy extends Entity {
   private targetY: number = 0;
   private targetUpdateTimer: number = 0;
 
-  constructor(x: number, y: number) {
-    super(x, y, CONFIG.ENEMY_SIZE, CONFIG.ENEMY_SIZE, CONFIG.ENEMY_HP);
+  constructor(x: number, y: number, type: EnemyType = 'normal') {
+    const isThin = type === 'thin_monkey';
+    super(
+      x,
+      y,
+      isThin ? CONFIG.THIN_MONKEY_SIZE : CONFIG.NORMAL_SIZE,
+      isThin ? CONFIG.THIN_MONKEY_SIZE : CONFIG.NORMAL_SIZE,
+      isThin ? CONFIG.THIN_MONKEY_HP : CONFIG.NORMAL_HP
+    );
+
+    this.enemyType = type;
+    this.speed = isThin ? CONFIG.THIN_MONKEY_SPEED : CONFIG.NORMAL_SPEED;
+    this.damage = isThin ? CONFIG.THIN_MONKEY_DAMAGE : CONFIG.NORMAL_DAMAGE;
+    this.dropChance = isThin ? CONFIG.THIN_MONKEY_DROP_CHANCE : CONFIG.NORMAL_DROP_CHANCE;
+    this.dropMin = isThin ? CONFIG.THIN_MONKEY_DROP_MIN : CONFIG.NORMAL_DROP_MIN;
+    this.dropMax = isThin ? CONFIG.THIN_MONKEY_DROP_MAX : CONFIG.NORMAL_DROP_MAX;
+    this.color = isThin ? CONFIG.THIN_MONKEY_COLOR : CONFIG.COLOR_ENEMY;
   }
 
   update(dt: number, player?: Player, buildings?: Building[]) {
@@ -214,7 +236,7 @@ export class Enemy extends Entity {
     const screenY = this.y - cameraY;
 
     // 身体
-    ctx.fillStyle = CONFIG.COLOR_ENEMY;
+    ctx.fillStyle = this.color;
     ctx.beginPath();
     // 画一个方形带圆角的敌人
     const r = 4;

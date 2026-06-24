@@ -61,9 +61,10 @@
 │   ├── index.css              # Tailwind 指令 + shadcn CSS 变量主题
 │   ├── config/                # 游戏数值与配色 JSON 配置文件
 │   │   ├── game.json          # 玩家、子弹、敌人、地图等通用数值
-│   │   ├── buildings.json     # 墙体、机枪塔属性
+│   │   ├── buildings.json     # 墙体、机枪塔属性与造价
 │   │   ├── colors.json        # 实体、UI、血条、预览等配色
-│   │   └── waves.json         # 波次规则与缩放
+│   │   ├── waves.json         # 波次规则与缩放
+│   │   └── zombie.json        # 普通僵尸、瘦猴僵尸属性与掉落
 │   ├── components/ui/         # UI 组件（含 shadcn 组件与游戏专用 UI）
 │   │   ├── GameUI.tsx         # 游戏中 HUD（HP、建材、波次、击杀、建造菜单）
 │   │   ├── StartScreen.tsx    # 开始界面
@@ -82,7 +83,7 @@
 │   │   ├── entities/          # 实体类
 │   │   │   ├── Entity.ts      # 抽象基类
 │   │   │   ├── Player.ts      # 玩家
-│   │   │   ├── Enemy.ts       # 敌人
+│   │   │   ├── Enemy.ts       # 敌人（普通僵尸 / 瘦猴僵尸）
 │   │   │   ├── Bullet.ts      # 子弹
 │   │   │   ├── Building.ts    # 建筑基类
 │   │   │   ├── Wall.ts        # 墙体
@@ -224,6 +225,7 @@ Tauri 配置：
 | 建筑造价与建材 | 墙体 `CONFIG.WALL_COST`、机枪塔 `CONFIG.TURRET_COST`；初始 `CONFIG.MATERIALS_INITIAL`，击杀僵尸有概率掉落 |
 | 玩家不能射击 | 检查是否处于建造模式（`InputManager.canShoot` 要求 `!buildType`） |
 | 机枪塔为什么不攻击 | 需满足：有敌人、在射程内、与目标之间无墙体阻挡视线 |
+| 瘦猴僵尸 | 从第 2 波起概率刷新，速度更快、血量更低，掉落建材概率与数量更高 |
 | 为什么有 `src/pages/Home.tsx` | Vite 模板遗留文件，当前未使用，可安全删除或替换为真实页面 |
 | 图标如何更新 | 替换 `src-tauri/icons/` 内对应 PNG，或参考 `src-tauri/generate-icons.js` |
 

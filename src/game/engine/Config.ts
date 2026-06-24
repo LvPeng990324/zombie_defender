@@ -2,6 +2,7 @@ import gameConfig from '@/config/game.json';
 import buildingsConfig from '@/config/buildings.json';
 import colorsConfig from '@/config/colors.json';
 import wavesConfig from '@/config/waves.json';
+import zombieConfig from '@/config/zombie.json';
 
 /**
  * 将十六进制颜色转换为 rgba 字符串，用于需要透明度的场景。
@@ -22,6 +23,7 @@ export const CONFIG = {
   ...buildingsConfig,
   ...colorsConfig,
   ...wavesConfig,
+  ...zombieConfig,
 } as const;
 
 export type BuildType = 'wall' | 'turret' | null;
