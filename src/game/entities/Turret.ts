@@ -1,9 +1,7 @@
 import { CONFIG } from '../engine/Config';
 import { Building } from './Building';
-import { hasLineOfSight } from '../engine/Raycast';
 import { getDistance } from '../engine/Collision';
 import type { Enemy } from './Enemy';
-import type { Wall } from './Wall';
 
 export class Turret extends Building {
   buildingType: string = 'turret';
@@ -19,7 +17,7 @@ export class Turret extends Building {
     super(gridX, gridY, CONFIG.turret.size, CONFIG.turret.size, CONFIG.turret.hp);
   }
 
-  update(dt: number, enemies?: Enemy[], walls?: Wall[]) {
+  update(dt: number, enemies?: Enemy[]) {
     if (!this.alive) return;
 
     // 射击冷却
@@ -27,8 +25,8 @@ export class Turret extends Building {
       this.shootCooldown -= dt;
     }
 
-    // 选择目标
-    this.target = (enemies && walls) ? this.findTarget(enemies, walls) : null;
+    // 选择目标（墙体不再遮挡视线）
+    this.target = enemies ? this.findTarget(enemies) : null;
 
     if (this.target) {
       // 更新朝向（带提前量）
@@ -85,28 +83,17 @@ export class Turret extends Building {
     this.takeDamage(CONFIG.turret.durabilityCost);
   }
 
-  // 找最近且视线畅通的敌人
-  private findTarget(enemies: Enemy[], walls: Wall[]): Enemy | null {
+  // 找最近且在射程内的敌人（墙体不再遮挡视线）
+  private findTarget(enemies: Enemy[]): Enemy | null {
     let closest: Enemy | null = null;
     let closestDist = Infinity;
-
-    const wallRects = walls
-      .filter(w => w.alive)
-      .map(w => ({ x: w.x, y: w.y, width: w.width, height: w.height }));
 
     for (const enemy of enemies) {
       if (!enemy.alive) continue;
       const dist = getDistance(this.centerX, this.centerY, enemy.centerX, enemy.centerY);
       if (dist > this.range) continue;
 
-      // 视线检测
-      const los = hasLineOfSight(
-        this.centerX, this.centerY,
-        enemy.centerX, enemy.centerY,
-        wallRects
-      );
-
-      if (los && dist < closestDist) {
+      if (dist < closestDist) {
         closest = enemy;
         closestDist = dist;
       }

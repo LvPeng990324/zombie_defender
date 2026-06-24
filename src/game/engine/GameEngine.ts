@@ -179,7 +179,6 @@ export class GameEngine {
 
     // 更新敌人
     const allBuildings = this.buildingSystem.buildings;
-    const walls = this.buildingSystem.getWalls();
     for (const enemy of this.enemies) {
       enemy.update(dt, this.player, allBuildings);
     }
@@ -189,7 +188,7 @@ export class GameEngine {
     const aliveEnemies = this.enemies.filter(e => e.alive);
 
     for (const turret of turrets) {
-      turret.update(dt, aliveEnemies, walls);
+      turret.update(dt, aliveEnemies);
 
       if (turret.canShoot() && turret.target) {
         // 使用炮塔已经计算好的带提前量的朝向
@@ -255,20 +254,6 @@ export class GameEngine {
         }
       }
 
-      // 子弹打墙体
-      if (bullet.alive) {
-        for (const wall of walls) {
-          if (!wall.alive) continue;
-          const dist = getDistance(
-            bullet.centerX, bullet.centerY,
-            wall.centerX, wall.centerY
-          );
-          if (dist < wall.width / 2 + bullet.width) {
-            bullet.alive = false;
-            break;
-          }
-        }
-      }
     }
 
     // 清理死亡实体
