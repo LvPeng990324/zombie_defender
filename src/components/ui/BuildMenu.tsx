@@ -1,6 +1,6 @@
 import { CONFIG, hexToRgba } from '@/game/engine/Config';
 import type { BuildType } from '@/game/engine/Config';
-import { Shield, Crosshair } from 'lucide-react';
+import { Shield, Crosshair, Factory } from 'lucide-react';
 
 interface BuildMenuProps {
   buildType: BuildType;
@@ -11,8 +11,10 @@ interface BuildMenuProps {
 export default function BuildMenu({ buildType, materials, onSelectBuildType }: BuildMenuProps) {
   const wallSelected = buildType === 'wall';
   const turretSelected = buildType === 'turret';
+  const generatorSelected = buildType === 'material_generator';
   const canAffordWall = materials >= CONFIG.wall.cost;
   const canAffordTurret = materials >= CONFIG.turret.cost;
+  const canAffordGenerator = materials >= CONFIG.material_generator.cost;
 
   return (
     <div
@@ -49,6 +51,22 @@ export default function BuildMenu({ buildType, materials, onSelectBuildType }: B
         <span className="text-white text-xs font-bold">机枪塔</span>
         <span className="text-white/50 text-[10px]">{CONFIG.turret.cost} 建材</span>
         <span className="text-white/50 text-[10px]">按键 2</span>
+      </button>
+
+      <button
+        onClick={() => onSelectBuildType(generatorSelected ? null : 'material_generator')}
+        className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg border-2 transition-all ${
+          generatorSelected ? 'scale-105' : 'border-white/20 bg-white/5 hover:bg-white/10'
+        } ${!generatorSelected && !canAffordGenerator ? 'opacity-50' : ''}`}
+        style={generatorSelected ? {
+          borderColor: CONFIG.COLOR_MATERIAL_GENERATOR,
+          backgroundColor: hexToRgba(CONFIG.COLOR_MATERIAL_GENERATOR, 0.3),
+        } : undefined}
+      >
+        <Factory className="w-6 h-6" style={{ color: CONFIG.COLOR_MATERIAL_GENERATOR }} />
+        <span className="text-white text-xs font-bold">生产器</span>
+        <span className="text-white/50 text-[10px]">{CONFIG.material_generator.cost} 建材</span>
+        <span className="text-white/50 text-[10px]">按键 3</span>
       </button>
 
       <div className="w-px h-10 bg-white/20 mx-1" />

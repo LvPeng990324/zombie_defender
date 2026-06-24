@@ -11,9 +11,9 @@
 - 游戏名：产品配置中为 `俯视角2D射击建造防守游戏`（Tauri 配置 `productName`）
 - 前端包名：`my-app`（`package.json`）
 - Rust 包名：`shooter-defense-game`（`src-tauri/Cargo.toml`）
-- 核心玩法：玩家使用 WASD/方向键移动，鼠标瞄准射击；按数字键 `1`/`2` 选择墙体或机枪塔，点击空地建造；抵御从地图四周边缘不断刷新的敌人波次。
+- 核心玩法：玩家使用 WASD/方向键移动，鼠标瞄准射击；按数字键 `1`/`2`/`3` 选择墙体、机枪塔或建材生产器，点击空地建造；抵御从地图四周边缘不断刷新的敌人波次。
 
-设计细节（数值、颜色、机制）见 `design/design.md`；桌面打包指南见 `PACKAGE_GUIDE.md`。
+设计细节（数值、颜色、机制）见 `README.md`；桌面打包指南见 `PACKAGE_GUIDE.md`。
 
 ---
 
@@ -52,8 +52,6 @@
 
 ```
 .
-├── design/
-│   └── design.md              # 游戏设计文档（机制、数值、颜色、层级）
 ├── src/
 │   ├── App.tsx                # 根组件：管理 start/playing/gameover 三屏
 │   ├── App.css                # 全局游戏容器与 body 样式
@@ -61,10 +59,10 @@
 │   ├── index.css              # Tailwind 指令 + shadcn CSS 变量主题
 │   ├── config/                # 游戏数值与配色 JSON 配置文件
 │   │   ├── game.json          # 玩家、子弹、敌人、地图等通用数值
-│   │   ├── buildings.json     # 墙体、机枪塔属性与造价（按 wall/turret 分层）
+│   │   ├── buildings.json     # 墙体、机枪塔、建材生产器属性与造价（按 wall/turret/material_generator 分层）
 │   │   ├── colors.json        # 实体、UI、血条、预览等配色
 │   │   ├── waves.json         # 波次规则与缩放
-│   │   └── zombie.json        # 普通僵尸、瘦猴僵尸属性与掉落（按 normal/thin_monkey 分层）
+│   │   └── zombie.json        # 普通僵尸、瘦猴僵尸、肥胖僵尸属性与掉落（按 normal/thin_monkey/fat 分层）
 │   ├── components/ui/         # UI 组件（含 shadcn 组件与游戏专用 UI）
 │   │   ├── GameUI.tsx         # 游戏中 HUD（HP、建材、波次、击杀、建造菜单）
 │   │   ├── StartScreen.tsx    # 开始界面
@@ -88,6 +86,7 @@
 │   │   │   ├── Building.ts    # 建筑基类
 │   │   │   ├── Wall.ts        # 墙体
 │   │   │   ├── Turret.ts      # 机枪塔
+│   │   │   ├── MaterialGenerator.ts # 建材生产器
 │   │   │   └── FloatingText.ts# 浮动提示文字（如 +N 建材）
 │   │   └── systems/           # 游戏系统
 │   │       ├── BuildingSystem.ts # 建造、查询、清理
@@ -221,10 +220,11 @@ Tauri 配置：
 
 | 问题 | 说明 |
 |------|------|
-| 如何切换建造类型 | 按 `1` 选墙体、`2` 选机枪塔、`Esc` 取消；也可点击底部菜单 |
-| 建筑造价与建材 | 墙体 `CONFIG.WALL_COST`、机枪塔 `CONFIG.TURRET_COST`；初始 `CONFIG.MATERIALS_INITIAL`，击杀僵尸有概率掉落 |
-| 玩家不能射击 | 检查是否处于建造模式（`InputManager.canShoot` 要求 `!buildType`） |
-| 机枪塔为什么不攻击 | 需满足：有敌人、在射程内、与目标之间无墙体阻挡视线 |
+| 如何切换建造类型 | 按 `1` 选墙体、`2` 选机枪塔、`3` 选建材生产器、`Esc` 取消；也可点击底部菜单 |
+| 建筑造价与建材 | 墙体 `CONFIG.wall.cost`、机枪塔 `CONFIG.turret.cost`、建材生产器 `CONFIG.material_generator.cost`；初始 `CONFIG.MATERIALS_INITIAL`，击杀僵尸有概率掉落，建材生产器可持续产出 |
+| 玩家不能射击 | 检查是否处于建造模式（`Player.canShoot` 要求 `!buildType`） |
+| 机枪塔为什么不攻击 | 需满足：有敌人、在射程内；墙体不再阻挡视线 |
+| 建材生产器不产出 | 需存活且未被敌人摧毁；每 2 秒产出 1 个建材 |
 | 瘦猴僵尸 | 从第 2 波起概率刷新，速度更快、血量更低，掉落建材概率与数量更高 |
 | 为什么有 `src/pages/Home.tsx` | Vite 模板遗留文件，当前未使用，可安全删除或替换为真实页面 |
 | 图标如何更新 | 替换 `src-tauri/icons/` 内对应 PNG，或参考 `src-tauri/generate-icons.js` |
@@ -233,7 +233,7 @@ Tauri 配置：
 
 ## 相关文件索引
 
-- 设计文档：`design/design.md`
+- 设计文档：`README.md`
 - 打包指南：`PACKAGE_GUIDE.md`
 - 前端入口：`index.html` → `src/main.tsx` → `src/App.tsx`
 - 游戏入口：`src/game/GameCanvas.tsx` → `src/game/engine/GameEngine.ts`

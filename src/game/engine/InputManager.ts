@@ -58,6 +58,7 @@ export class InputManager {
     this.keys.add(e.key.toLowerCase());
     if (e.key === '1') this.buildType = 'wall';
     if (e.key === '2') this.buildType = 'turret';
+    if (e.key === '3') this.buildType = 'material_generator';
     if (e.key === 'Escape') this.buildType = null;
   }
 

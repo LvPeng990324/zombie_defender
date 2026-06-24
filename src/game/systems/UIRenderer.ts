@@ -1,4 +1,5 @@
 import { CONFIG } from '../engine/Config';
+import type { BuildType } from '../engine/Config';
 
 export class UIRenderer {
   // 在Canvas上渲染游戏内UI（如建造预览）
@@ -7,27 +8,32 @@ export class UIRenderer {
     worldX: number,
     worldY: number,
     canBuild: boolean,
-    buildType: string,
+    buildType: BuildType,
     cameraX: number,
     cameraY: number
   ) {
+    if (!buildType) return;
+
     const gridSize = CONFIG.wall.size;
     const gridX = Math.floor(worldX / gridSize) * gridSize - cameraX;
     const gridY = Math.floor(worldY / gridSize) * gridSize - cameraY;
+    const previewSize = buildType === 'material_generator'
+      ? CONFIG.material_generator.size
+      : gridSize;
 
     ctx.fillStyle = canBuild ? CONFIG.COLOR_PREVIEW_VALID : CONFIG.COLOR_PREVIEW_INVALID;
-    ctx.fillRect(gridX, gridY, gridSize, gridSize);
+    ctx.fillRect(gridX, gridY, previewSize, previewSize);
 
     // 边框
     ctx.strokeStyle = canBuild ? CONFIG.COLOR_PREVIEW_BORDER_VALID : CONFIG.COLOR_PREVIEW_BORDER_INVALID;
     ctx.lineWidth = 2;
-    ctx.strokeRect(gridX, gridY, gridSize, gridSize);
+    ctx.strokeRect(gridX, gridY, previewSize, previewSize);
 
     // 如果是机枪塔，显示射程
     if (buildType === 'turret' && canBuild) {
       ctx.fillStyle = CONFIG.COLOR_TURRET_RANGE;
       ctx.beginPath();
-      ctx.arc(gridX + gridSize / 2, gridY + gridSize / 2, CONFIG.turret.range, 0, Math.PI * 2);
+      ctx.arc(gridX + previewSize / 2, gridY + previewSize / 2, CONFIG.turret.range, 0, Math.PI * 2);
       ctx.fill();
     }
   }

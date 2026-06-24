@@ -11,5 +11,12 @@
     "shootCooldown": 500,
     "durabilityCost": 2,
     "cost": 50
+  },
+  "material_generator": {
+    "hp": 50,
+    "size": 64,
+    "cost": 100,
+    "productionInterval": 2000,
+    "productionAmount": 1
   }
 }

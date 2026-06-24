@@ -89,10 +89,19 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
             <span
               className="font-bold"
               style={{
-                color: state.buildType === 'wall' ? CONFIG.COLOR_WALL : CONFIG.COLOR_TURRET,
+                color:
+                  state.buildType === 'wall'
+                    ? CONFIG.COLOR_WALL
+                    : state.buildType === 'turret'
+                      ? CONFIG.COLOR_TURRET
+                      : CONFIG.COLOR_MATERIAL_GENERATOR,
               }}
             >
-              {state.buildType === 'wall' ? '墙体' : '机枪塔'}
+              {state.buildType === 'wall'
+                ? '墙体'
+                : state.buildType === 'turret'
+                  ? '机枪塔'
+                  : '建材生产器'}
             </span>
           </span>
         </div>

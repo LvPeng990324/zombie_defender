@@ -26,4 +26,4 @@ export const CONFIG = {
   ...zombieConfig,
 } as const;
 
-export type BuildType = 'wall' | 'turret' | null;
+export type BuildType = 'wall' | 'turret' | 'material_generator' | null;

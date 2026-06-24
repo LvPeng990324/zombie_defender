@@ -1,7 +1,9 @@
 import { CONFIG } from '../engine/Config';
 import type { BuildType } from '../engine/Config';
+import { rectIntersect } from '../engine/Collision';
 import { Wall } from '../entities/Wall';
 import { Turret } from '../entities/Turret';
+import { MaterialGenerator } from '../entities/MaterialGenerator';
 import type { Building } from '../entities/Building';
 import type { Player } from '../entities/Player';
 
@@ -23,28 +25,20 @@ export class BuildingSystem {
   build(type: BuildType, worldX: number, worldY: number, _player: Player): boolean {
     if (!type || this.buildCooldown > 0) return false;
 
-    // 检查位置是否已被占用
-    const gridSize = CONFIG.wall.size;
-    const gridX = Math.floor(worldX / gridSize) * gridSize;
-    const gridY = Math.floor(worldY / gridSize) * gridSize;
+    const newRect = this.getBuildingRect(type, worldX, worldY);
+    if (!newRect) return false;
 
+    // 检查是否与现有建筑重叠
     for (const b of this.buildings) {
-      if (b.alive && b.x === gridX && b.y === gridY) {
-        return false; // 位置已被占用
+      if (!b.alive) continue;
+      if (rectIntersect(newRect, b)) {
+        return false;
       }
     }
 
-    // 检查是否在玩家身上
-    const px = _player.x;
-    const py = _player.y;
-    const pw = _player.width;
-    const ph = _player.height;
-    if (
-      gridX < px + pw &&
-      gridX + gridSize > px &&
-      gridY < py + ph &&
-      gridY + gridSize > py
-    ) {
+    // 检查是否与玩家重叠
+    const playerRect = { x: _player.x, y: _player.y, width: _player.width, height: _player.height };
+    if (rectIntersect(newRect, playerRect)) {
       return false;
     }
 
@@ -53,6 +47,8 @@ export class BuildingSystem {
       building = new Wall(worldX, worldY);
     } else if (type === 'turret') {
       building = new Turret(worldX, worldY);
+    } else if (type === 'material_generator') {
+      building = new MaterialGenerator(worldX, worldY);
     } else {
       return false;
     }
@@ -63,31 +59,45 @@ export class BuildingSystem {
   }
 
   // 检查某个位置是否可以建造（用于预览）
-  canBuildAt(worldX: number, worldY: number, player: Player): boolean {
-    const gridSize = CONFIG.wall.size;
-    const gridX = Math.floor(worldX / gridSize) * gridSize;
-    const gridY = Math.floor(worldY / gridSize) * gridSize;
+  canBuildAt(type: BuildType, worldX: number, worldY: number, player: Player): boolean {
+    if (!type) return false;
+
+    const newRect = this.getBuildingRect(type, worldX, worldY);
+    if (!newRect) return false;
 
     for (const b of this.buildings) {
-      if (b.alive && b.x === gridX && b.y === gridY) {
+      if (!b.alive) continue;
+      if (rectIntersect(newRect, b)) {
         return false;
       }
     }
 
-    const px = player.x;
-    const py = player.y;
-    const pw = player.width;
-    const ph = player.height;
-    if (
-      gridX < px + pw &&
-      gridX + gridSize > px &&
-      gridY < py + ph &&
-      gridY + gridSize > py
-    ) {
+    const playerRect = { x: player.x, y: player.y, width: player.width, height: player.height };
+    if (rectIntersect(newRect, playerRect)) {
       return false;
     }
 
     return true;
+  }
+
+  // 获取指定类型的建筑在指定世界坐标下的矩形（用于碰撞/放置检测）
+  getBuildingRect(type: BuildType, worldX: number, worldY: number): { x: number; y: number; width: number; height: number } | null {
+    if (!type) return null;
+
+    const gridSize = CONFIG.wall.size;
+    const gridX = Math.floor(worldX / gridSize) * gridSize;
+    const gridY = Math.floor(worldY / gridSize) * gridSize;
+
+    if (type === 'wall') {
+      return { x: gridX, y: gridY, width: CONFIG.wall.size, height: CONFIG.wall.size };
+    }
+    if (type === 'turret') {
+      return { x: gridX, y: gridY, width: CONFIG.turret.size, height: CONFIG.turret.size };
+    }
+    if (type === 'material_generator') {
+      return { x: gridX, y: gridY, width: CONFIG.material_generator.size, height: CONFIG.material_generator.size };
+    }
+    return null;
   }
 
   getWalls(): Wall[] {
@@ -96,6 +106,10 @@ export class BuildingSystem {
 
   getTurrets(): Turret[] {
     return this.buildings.filter(b => b.alive && b.buildingType === 'turret') as unknown as Turret[];
+  }
+
+  getMaterialGenerators(): MaterialGenerator[] {
+    return this.buildings.filter(b => b.alive && b.buildingType === 'material_generator') as unknown as MaterialGenerator[];
   }
 
   cleanup() {

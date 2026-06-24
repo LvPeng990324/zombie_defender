@@ -157,7 +157,7 @@ export class GameEngine {
     // 建造
     this.buildingSystem.update(dt);
     if (this.input.buildType && this.input.mouseClicked) {
-      const cost = this.input.buildType === 'wall' ? CONFIG.wall.cost : CONFIG.turret.cost;
+      const cost = this.getBuildCost(this.input.buildType);
       if (this.materials >= cost) {
         const success = this.buildingSystem.build(
           this.input.buildType,
@@ -202,6 +202,18 @@ export class GameEngine {
         bullet.damage = CONFIG.BULLET_DAMAGE / 2; // 机枪塔伤害减半
         this.bullets.push(bullet);
         turret.shoot();
+      }
+    }
+
+    // 更新建材生产器
+    const materialGenerators = this.buildingSystem.getMaterialGenerators();
+    for (const generator of materialGenerators) {
+      const produced = generator.update(dt);
+      if (produced > 0) {
+        this.materials += produced;
+        this.floatingTexts.push(
+          new FloatingText(generator.centerX, generator.centerY, `+${produced}`)
+        );
       }
     }
 
@@ -334,9 +346,10 @@ export class GameEngine {
 
     // 绘制建造预览
     if (this.input.buildType) {
-      const cost = this.input.buildType === 'wall' ? CONFIG.wall.cost : CONFIG.turret.cost;
+      const cost = this.getBuildCost(this.input.buildType);
       const canBuild =
         this.buildingSystem.canBuildAt(
+          this.input.buildType,
           this.input.mouseWorldX,
           this.input.mouseWorldY,
           this.player
@@ -374,6 +387,16 @@ export class GameEngine {
       ctx.moveTo(0, screenY);
       ctx.lineTo(screenW, screenY);
       ctx.stroke();
+    }
+  }
+
+  // 获取指定建造类型的造价
+  private getBuildCost(type: BuildType): number {
+    switch (type) {
+      case 'wall': return CONFIG.wall.cost;
+      case 'turret': return CONFIG.turret.cost;
+      case 'material_generator': return CONFIG.material_generator.cost;
+      default: return 0;
     }
   }
 
