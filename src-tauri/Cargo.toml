@@ -1,0 +1,12 @@
+[package]
+name = "shooter-defense-game"
+version = "1.0.0"
+description = "俯视角2D射击建造防守游戏"
+authors = ["Game Developer"]
+edition = "2021"
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
