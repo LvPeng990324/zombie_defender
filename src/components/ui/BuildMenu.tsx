@@ -4,12 +4,15 @@ import { Shield, Crosshair } from 'lucide-react';
 
 interface BuildMenuProps {
   buildType: BuildType;
+  materials: number;
   onSelectBuildType: (type: BuildType) => void;
 }
 
-export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuProps) {
+export default function BuildMenu({ buildType, materials, onSelectBuildType }: BuildMenuProps) {
   const wallSelected = buildType === 'wall';
   const turretSelected = buildType === 'turret';
+  const canAffordWall = materials >= CONFIG.WALL_COST;
+  const canAffordTurret = materials >= CONFIG.TURRET_COST;
 
   return (
     <div
@@ -20,7 +23,7 @@ export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuPro
         onClick={() => onSelectBuildType(wallSelected ? null : 'wall')}
         className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg border-2 transition-all ${
           wallSelected ? 'scale-105' : 'border-white/20 bg-white/5 hover:bg-white/10'
-        }`}
+        } ${!wallSelected && !canAffordWall ? 'opacity-50' : ''}`}
         style={wallSelected ? {
           borderColor: CONFIG.COLOR_WALL,
           backgroundColor: hexToRgba(CONFIG.COLOR_WALL, 0.3),
@@ -28,6 +31,7 @@ export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuPro
       >
         <Shield className="w-6 h-6" style={{ color: CONFIG.COLOR_WALL }} />
         <span className="text-white text-xs font-bold">墙体</span>
+        <span className="text-white/50 text-[10px]">{CONFIG.WALL_COST} 建材</span>
         <span className="text-white/50 text-[10px]">按键 1</span>
       </button>
 
@@ -35,7 +39,7 @@ export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuPro
         onClick={() => onSelectBuildType(turretSelected ? null : 'turret')}
         className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg border-2 transition-all ${
           turretSelected ? 'scale-105' : 'border-white/20 bg-white/5 hover:bg-white/10'
-        }`}
+        } ${!turretSelected && !canAffordTurret ? 'opacity-50' : ''}`}
         style={turretSelected ? {
           borderColor: CONFIG.COLOR_TURRET,
           backgroundColor: hexToRgba(CONFIG.COLOR_TURRET, 0.3),
@@ -43,6 +47,7 @@ export default function BuildMenu({ buildType, onSelectBuildType }: BuildMenuPro
       >
         <Crosshair className="w-6 h-6" style={{ color: CONFIG.COLOR_TURRET }} />
         <span className="text-white text-xs font-bold">机枪塔</span>
+        <span className="text-white/50 text-[10px]">{CONFIG.TURRET_COST} 建材</span>
         <span className="text-white/50 text-[10px]">按键 2</span>
       </button>
 

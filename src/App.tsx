@@ -20,6 +20,7 @@ export default function App() {
     buildType: null,
     killCount: 0,
     survivalTime: 0,
+    materials: CONFIG.MATERIALS_INITIAL,
     isGameOver: false,
     isRunning: false,
   });

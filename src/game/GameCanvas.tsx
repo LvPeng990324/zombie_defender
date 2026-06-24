@@ -9,6 +9,7 @@ export interface GameState {
   buildType: BuildType;
   killCount: number;
   survivalTime: number;
+  materials: number;
   isGameOver: boolean;
   isRunning: boolean;
 }

@@ -65,7 +65,7 @@
 │   │   ├── colors.json        # 实体、UI、血条、预览等配色
 │   │   └── waves.json         # 波次规则与缩放
 │   ├── components/ui/         # UI 组件（含 shadcn 组件与游戏专用 UI）
-│   │   ├── GameUI.tsx         # 游戏中 HUD（HP、波次、击杀、建造菜单）
+│   │   ├── GameUI.tsx         # 游戏中 HUD（HP、建材、波次、击杀、建造菜单）
 │   │   ├── StartScreen.tsx    # 开始界面
 │   │   ├── GameOverScreen.tsx # 游戏结束界面
 │   │   ├── BuildMenu.tsx      # 底部建造类型切换
@@ -86,7 +86,8 @@
 │   │   │   ├── Bullet.ts      # 子弹
 │   │   │   ├── Building.ts    # 建筑基类
 │   │   │   ├── Wall.ts        # 墙体
-│   │   │   └── Turret.ts      # 机枪塔
+│   │   │   ├── Turret.ts      # 机枪塔
+│   │   │   └── FloatingText.ts# 浮动提示文字（如 +N 建材）
 │   │   └── systems/           # 游戏系统
 │   │       ├── BuildingSystem.ts # 建造、查询、清理
 │   │       ├── SpawnSystem.ts    # 敌人生成与波次
@@ -220,6 +221,7 @@ Tauri 配置：
 | 问题 | 说明 |
 |------|------|
 | 如何切换建造类型 | 按 `1` 选墙体、`2` 选机枪塔、`Esc` 取消；也可点击底部菜单 |
+| 建筑造价与建材 | 墙体 `CONFIG.WALL_COST`、机枪塔 `CONFIG.TURRET_COST`；初始 `CONFIG.MATERIALS_INITIAL`，击杀僵尸有概率掉落 |
 | 玩家不能射击 | 检查是否处于建造模式（`InputManager.canShoot` 要求 `!buildType`） |
 | 机枪塔为什么不攻击 | 需满足：有敌人、在射程内、与目标之间无墙体阻挡视线 |
 | 为什么有 `src/pages/Home.tsx` | Vite 模板遗留文件，当前未使用，可安全删除或替换为真实页面 |

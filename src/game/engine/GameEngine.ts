@@ -5,6 +5,7 @@ import { getDistance } from './Collision';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/Enemy';
 import { Bullet } from '../entities/Bullet';
+import { FloatingText } from '../entities/FloatingText';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { BuildingSystem } from '../systems/BuildingSystem';
 import { UIRenderer } from '../systems/UIRenderer';
@@ -17,6 +18,7 @@ export class GameEngine {
   player: Player;
   enemies: Enemy[] = [];
   bullets: Bullet[] = [];
+  floatingTexts: FloatingText[] = [];
   spawnSystem: SpawnSystem;
   buildingSystem: BuildingSystem;
   uiRenderer: UIRenderer;
@@ -31,6 +33,9 @@ export class GameEngine {
   killCount: number = 0;
   survivalTime: number = 0; // ms
   startTime: number = 0;
+
+  // 建材资源
+  materials: number = CONFIG.MATERIALS_INITIAL;
 
   // 游戏状态
   isRunning: boolean = false;
@@ -79,8 +84,10 @@ export class GameEngine {
     this.stop();
     this.enemies = [];
     this.bullets = [];
+    this.floatingTexts = [];
     this.killCount = 0;
     this.survivalTime = 0;
+    this.materials = CONFIG.MATERIALS_INITIAL;
     this.isGameOver = false;
     this.isRunning = false;
 
@@ -150,14 +157,18 @@ export class GameEngine {
     // 建造
     this.buildingSystem.update(dt);
     if (this.input.buildType && this.input.mouseClicked) {
-      const success = this.buildingSystem.build(
-        this.input.buildType,
-        this.input.mouseWorldX,
-        this.input.mouseWorldY,
-        this.player
-      );
-      if (success) {
-        // 播放建造效果或音效可以在这里添加
+      const cost = this.input.buildType === 'wall' ? CONFIG.WALL_COST : CONFIG.TURRET_COST;
+      if (this.materials >= cost) {
+        const success = this.buildingSystem.build(
+          this.input.buildType,
+          this.input.mouseWorldX,
+          this.input.mouseWorldY,
+          this.player
+        );
+        if (success) {
+          this.materials -= cost;
+          // 播放建造效果或音效可以在这里添加
+        }
       }
     }
 
@@ -195,6 +206,11 @@ export class GameEngine {
       }
     }
 
+    // 更新浮动文字特效
+    for (const text of this.floatingTexts) {
+      text.update(dt);
+    }
+
     // 更新子弹
     for (const bullet of this.bullets) {
       bullet.update(dt);
@@ -214,6 +230,7 @@ export class GameEngine {
             bullet.alive = false;
             if (!enemy.alive) {
               this.killCount++;
+              this.addMaterialDrop(enemy.centerX, enemy.centerY);
             }
             break;
           }
@@ -231,6 +248,7 @@ export class GameEngine {
             bullet.alive = false;
             if (!enemy.alive) {
               this.killCount++;
+              this.addMaterialDrop(enemy.centerX, enemy.centerY);
             }
             break;
           }
@@ -256,6 +274,7 @@ export class GameEngine {
     // 清理死亡实体
     this.enemies = this.enemies.filter(e => e.alive);
     this.bullets = this.bullets.filter(b => b.alive);
+    this.floatingTexts = this.floatingTexts.filter(t => t.alive);
     this.buildingSystem.cleanup();
 
     // 检查游戏结束
@@ -269,6 +288,7 @@ export class GameEngine {
         buildType: this.input.buildType,
         killCount: this.killCount,
         survivalTime: this.survivalTime,
+        materials: this.materials,
         isGameOver: true,
         isRunning: false,
       });
@@ -286,6 +306,7 @@ export class GameEngine {
       buildType: this.input.buildType,
       killCount: this.killCount,
       survivalTime: this.survivalTime,
+      materials: this.materials,
       isGameOver: false,
       isRunning: true,
     });
@@ -321,13 +342,20 @@ export class GameEngine {
       bullet.render(ctx, this.cameraX, this.cameraY);
     }
 
+    // 绘制浮动文字特效（在最上层）
+    for (const text of this.floatingTexts) {
+      text.render(ctx, this.cameraX, this.cameraY);
+    }
+
     // 绘制建造预览
     if (this.input.buildType) {
-      const canBuild = this.buildingSystem.canBuildAt(
-        this.input.mouseWorldX,
-        this.input.mouseWorldY,
-        this.player
-      );
+      const cost = this.input.buildType === 'wall' ? CONFIG.WALL_COST : CONFIG.TURRET_COST;
+      const canBuild =
+        this.buildingSystem.canBuildAt(
+          this.input.mouseWorldX,
+          this.input.mouseWorldY,
+          this.player
+        ) && this.materials >= cost;
       this.uiRenderer.renderBuildPreview(
         ctx,
         this.input.mouseWorldX,
@@ -373,9 +401,21 @@ export class GameEngine {
       buildType: this.input.buildType,
       killCount: this.killCount,
       survivalTime: this.survivalTime,
+      materials: this.materials,
       isGameOver: this.isGameOver,
       isRunning: this.isRunning,
     };
+  }
+
+  // 击杀敌人时概率掉落建材（直接加到玩家身上）并在死亡位置显示浮动提示
+  private addMaterialDrop(x: number, y: number) {
+    if (Math.random() < CONFIG.MATERIAL_DROP_CHANCE) {
+      const amount = Math.floor(
+        Math.random() * (CONFIG.MATERIAL_DROP_MAX - CONFIG.MATERIAL_DROP_MIN + 1)
+      ) + CONFIG.MATERIAL_DROP_MIN;
+      this.materials += amount;
+      this.floatingTexts.push(new FloatingText(x, y, `+${amount}`));
+    }
   }
 
   selectBuildType(type: BuildType) {

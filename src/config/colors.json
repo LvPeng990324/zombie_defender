@@ -22,6 +22,8 @@
 
   "COLOR_UI_PANEL": "rgba(0,0,0,0.7)",
   "COLOR_UI_ICON_WAVE": "#f1c40f",
+  "COLOR_UI_ICON_MATERIAL": "#95a5a6",
+  "COLOR_MATERIAL_FLOAT": "#f1c40f",
 
   "COLOR_HP_GREEN": "#2ecc71",
   "COLOR_HP_RED": "#e74c3c",

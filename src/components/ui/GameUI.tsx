@@ -3,7 +3,7 @@ import type { GameState } from '@/game/GameCanvas';
 import type { BuildType } from '@/game/engine/Config';
 import HPBar from './HPBar';
 import BuildMenu from './BuildMenu';
-import { Swords } from 'lucide-react';
+import { Swords, Cog } from 'lucide-react';
 
 interface GameUIProps {
   state: GameState;
@@ -26,9 +26,24 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
       className="fixed inset-0 z-10 pointer-events-none"
       style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
     >
-      {/* 左上角：HP条和波次信息 */}
+      {/* 左上角：HP条、建材和波次信息 */}
       <div className="absolute top-4 left-4 flex flex-col gap-3 pointer-events-auto">
         <HPBar hp={state.hp} maxHp={state.maxHp} />
+
+        <div
+          className="flex items-center gap-2 rounded-lg px-3 py-2 border border-white/10"
+          style={{ backgroundColor: CONFIG.COLOR_UI_PANEL }}
+        >
+          <Cog className="w-5 h-5" style={{ color: CONFIG.COLOR_UI_ICON_MATERIAL }} />
+          <div className="flex flex-col">
+            <span className="text-white text-sm font-bold">
+              建材: {state.materials}
+            </span>
+            <span className="text-white/60 text-xs">
+              击杀僵尸概率掉落
+            </span>
+          </div>
+        </div>
 
         <div
           className="flex items-center gap-2 rounded-lg px-3 py-2 border border-white/10"
@@ -58,6 +73,7 @@ export default function GameUI({ state, onSelectBuildType }: GameUIProps) {
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto">
         <BuildMenu
           buildType={state.buildType}
+          materials={state.materials}
           onSelectBuildType={onSelectBuildType}
         />
       </div>
