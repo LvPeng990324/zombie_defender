@@ -11,7 +11,7 @@ export class UIRenderer {
     cameraX: number,
     cameraY: number
   ) {
-    const gridSize = CONFIG.WALL_SIZE;
+    const gridSize = CONFIG.wall.size;
     const gridX = Math.floor(worldX / gridSize) * gridSize - cameraX;
     const gridY = Math.floor(worldY / gridSize) * gridSize - cameraY;
 
@@ -27,7 +27,7 @@ export class UIRenderer {
     if (buildType === 'turret' && canBuild) {
       ctx.fillStyle = CONFIG.COLOR_TURRET_RANGE;
       ctx.beginPath();
-      ctx.arc(gridX + gridSize / 2, gridY + gridSize / 2, CONFIG.TURRET_RANGE, 0, Math.PI * 2);
+      ctx.arc(gridX + gridSize / 2, gridY + gridSize / 2, CONFIG.turret.range, 0, Math.PI * 2);
       ctx.fill();
     }
   }

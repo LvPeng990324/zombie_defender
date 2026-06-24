@@ -24,7 +24,7 @@ export class BuildingSystem {
     if (!type || this.buildCooldown > 0) return false;
 
     // 检查位置是否已被占用
-    const gridSize = CONFIG.WALL_SIZE;
+    const gridSize = CONFIG.wall.size;
     const gridX = Math.floor(worldX / gridSize) * gridSize;
     const gridY = Math.floor(worldY / gridSize) * gridSize;
 
@@ -64,7 +64,7 @@ export class BuildingSystem {
 
   // 检查某个位置是否可以建造（用于预览）
   canBuildAt(worldX: number, worldY: number, player: Player): boolean {
-    const gridSize = CONFIG.WALL_SIZE;
+    const gridSize = CONFIG.wall.size;
     const gridX = Math.floor(worldX / gridSize) * gridSize;
     const gridY = Math.floor(worldY / gridSize) * gridSize;
 

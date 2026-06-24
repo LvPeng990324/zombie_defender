@@ -7,16 +7,16 @@ import type { Wall } from './Wall';
 
 export class Turret extends Building {
   buildingType: string = 'turret';
-  range: number = CONFIG.TURRET_RANGE;
+  range: number = CONFIG.turret.range;
   shootCooldown: number = 0;
-  shootCooldownMax: number = CONFIG.TURRET_SHOOT_COOLDOWN;
+  shootCooldownMax: number = CONFIG.turret.shootCooldown;
   facingAngle: number = 0;
   target: Enemy | null = null;
 
   constructor(x: number, y: number) {
-    const gridX = Math.floor(x / CONFIG.WALL_SIZE) * CONFIG.WALL_SIZE;
-    const gridY = Math.floor(y / CONFIG.WALL_SIZE) * CONFIG.WALL_SIZE;
-    super(gridX, gridY, CONFIG.TURRET_SIZE, CONFIG.TURRET_SIZE, CONFIG.TURRET_HP);
+    const gridX = Math.floor(x / CONFIG.wall.size) * CONFIG.wall.size;
+    const gridY = Math.floor(y / CONFIG.wall.size) * CONFIG.wall.size;
+    super(gridX, gridY, CONFIG.turret.size, CONFIG.turret.size, CONFIG.turret.hp);
   }
 
   update(dt: number, enemies?: Enemy[], walls?: Wall[]) {
@@ -82,7 +82,7 @@ export class Turret extends Building {
 
   shoot() {
     this.shootCooldown = this.shootCooldownMax;
-    this.takeDamage(CONFIG.TURRET_DURABILITY_COST);
+    this.takeDamage(CONFIG.turret.durabilityCost);
   }
 
   // 找最近且视线畅通的敌人

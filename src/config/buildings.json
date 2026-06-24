@@ -1,12 +1,15 @@
 {
-  "WALL_HP": 500,
-  "WALL_SIZE": 32,
-  "WALL_COST": 10,
-
-  "TURRET_HP": 100,
-  "TURRET_SIZE": 28,
-  "TURRET_RANGE": 200,
-  "TURRET_SHOOT_COOLDOWN": 500,
-  "TURRET_DURABILITY_COST": 2,
-  "TURRET_COST": 50
+  "wall": {
+    "hp": 500,
+    "size": 32,
+    "cost": 10
+  },
+  "turret": {
+    "hp": 100,
+    "size": 28,
+    "range": 200,
+    "shootCooldown": 500,
+    "durabilityCost": 2,
+    "cost": 50
+  }
 }

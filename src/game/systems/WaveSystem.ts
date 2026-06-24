@@ -25,7 +25,7 @@ export class WaveSystem {
   }
 
   getSpawnInterval(): number {
-    return Math.max(500, CONFIG.ENEMY_SPAWN_INTERVAL_BASE - (this.wave - 1) * CONFIG.WAVE_SPAWN_REDUCTION);
+    return Math.max(500, CONFIG.spawnIntervalBase - (this.wave - 1) * CONFIG.WAVE_SPAWN_REDUCTION);
   }
 
   getEnemiesPerWave(): number {

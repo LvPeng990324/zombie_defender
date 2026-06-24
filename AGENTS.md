@@ -61,10 +61,10 @@
 │   ├── index.css              # Tailwind 指令 + shadcn CSS 变量主题
 │   ├── config/                # 游戏数值与配色 JSON 配置文件
 │   │   ├── game.json          # 玩家、子弹、敌人、地图等通用数值
-│   │   ├── buildings.json     # 墙体、机枪塔属性与造价
+│   │   ├── buildings.json     # 墙体、机枪塔属性与造价（按 wall/turret 分层）
 │   │   ├── colors.json        # 实体、UI、血条、预览等配色
 │   │   ├── waves.json         # 波次规则与缩放
-│   │   └── zombie.json        # 普通僵尸、瘦猴僵尸属性与掉落
+│   │   └── zombie.json        # 普通僵尸、瘦猴僵尸属性与掉落（按 normal/thin_monkey 分层）
 │   ├── components/ui/         # UI 组件（含 shadcn 组件与游戏专用 UI）
 │   │   ├── GameUI.tsx         # 游戏中 HUD（HP、建材、波次、击杀、建造菜单）
 │   │   ├── StartScreen.tsx    # 开始界面
@@ -238,7 +238,7 @@ Tauri 配置：
 - 前端入口：`index.html` → `src/main.tsx` → `src/App.tsx`
 - 游戏入口：`src/game/GameCanvas.tsx` → `src/game/engine/GameEngine.ts`
 - 游戏配置：
-  - JSON 源文件：`src/config/game.json`、`src/config/buildings.json`、`src/config/colors.json`、`src/config/waves.json`
+  - JSON 源文件：`src/config/game.json`、`src/config/buildings.json`、`src/config/colors.json`、`src/config/waves.json`、`src/config/zombie.json`
   - 聚合入口：`src/game/engine/Config.ts`
 - Tauri 配置：`src-tauri/tauri.conf.json`
 - 构建配置：`vite.config.ts`、`tailwind.config.js`、`eslint.config.js`

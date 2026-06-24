@@ -11,8 +11,8 @@ interface BuildMenuProps {
 export default function BuildMenu({ buildType, materials, onSelectBuildType }: BuildMenuProps) {
   const wallSelected = buildType === 'wall';
   const turretSelected = buildType === 'turret';
-  const canAffordWall = materials >= CONFIG.WALL_COST;
-  const canAffordTurret = materials >= CONFIG.TURRET_COST;
+  const canAffordWall = materials >= CONFIG.wall.cost;
+  const canAffordTurret = materials >= CONFIG.turret.cost;
 
   return (
     <div
@@ -31,7 +31,7 @@ export default function BuildMenu({ buildType, materials, onSelectBuildType }: B
       >
         <Shield className="w-6 h-6" style={{ color: CONFIG.COLOR_WALL }} />
         <span className="text-white text-xs font-bold">墙体</span>
-        <span className="text-white/50 text-[10px]">{CONFIG.WALL_COST} 建材</span>
+        <span className="text-white/50 text-[10px]">{CONFIG.wall.cost} 建材</span>
         <span className="text-white/50 text-[10px]">按键 1</span>
       </button>
 
@@ -47,7 +47,7 @@ export default function BuildMenu({ buildType, materials, onSelectBuildType }: B
       >
         <Crosshair className="w-6 h-6" style={{ color: CONFIG.COLOR_TURRET }} />
         <span className="text-white text-xs font-bold">机枪塔</span>
-        <span className="text-white/50 text-[10px]">{CONFIG.TURRET_COST} 建材</span>
+        <span className="text-white/50 text-[10px]">{CONFIG.turret.cost} 建材</span>
         <span className="text-white/50 text-[10px]">按键 2</span>
       </button>
 

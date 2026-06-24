@@ -6,9 +6,9 @@ export class Wall extends Building {
 
   constructor(x: number, y: number) {
     // 将坐标对齐到网格
-    const gridX = Math.floor(x / CONFIG.WALL_SIZE) * CONFIG.WALL_SIZE;
-    const gridY = Math.floor(y / CONFIG.WALL_SIZE) * CONFIG.WALL_SIZE;
-    super(gridX, gridY, CONFIG.WALL_SIZE, CONFIG.WALL_SIZE, CONFIG.WALL_HP);
+    const gridX = Math.floor(x / CONFIG.wall.size) * CONFIG.wall.size;
+    const gridY = Math.floor(y / CONFIG.wall.size) * CONFIG.wall.size;
+    super(gridX, gridY, CONFIG.wall.size, CONFIG.wall.size, CONFIG.wall.hp);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

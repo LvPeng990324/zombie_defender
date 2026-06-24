@@ -27,18 +27,18 @@ export class Enemy extends Entity {
     super(
       x,
       y,
-      isThin ? CONFIG.THIN_MONKEY_SIZE : CONFIG.NORMAL_SIZE,
-      isThin ? CONFIG.THIN_MONKEY_SIZE : CONFIG.NORMAL_SIZE,
-      isThin ? CONFIG.THIN_MONKEY_HP : CONFIG.NORMAL_HP
+      isThin ? CONFIG.thin_monkey.size : CONFIG.normal.size,
+      isThin ? CONFIG.thin_monkey.size : CONFIG.normal.size,
+      isThin ? CONFIG.thin_monkey.hp : CONFIG.normal.hp
     );
 
     this.enemyType = type;
-    this.speed = isThin ? CONFIG.THIN_MONKEY_SPEED : CONFIG.NORMAL_SPEED;
-    this.damage = isThin ? CONFIG.THIN_MONKEY_DAMAGE : CONFIG.NORMAL_DAMAGE;
-    this.dropChance = isThin ? CONFIG.THIN_MONKEY_DROP_CHANCE : CONFIG.NORMAL_DROP_CHANCE;
-    this.dropMin = isThin ? CONFIG.THIN_MONKEY_DROP_MIN : CONFIG.NORMAL_DROP_MIN;
-    this.dropMax = isThin ? CONFIG.THIN_MONKEY_DROP_MAX : CONFIG.NORMAL_DROP_MAX;
-    this.color = isThin ? CONFIG.THIN_MONKEY_COLOR : CONFIG.COLOR_ENEMY;
+    this.speed = isThin ? CONFIG.thin_monkey.speed : CONFIG.normal.speed;
+    this.damage = isThin ? CONFIG.thin_monkey.damage : CONFIG.normal.damage;
+    this.dropChance = isThin ? CONFIG.thin_monkey.dropChance : CONFIG.normal.dropChance;
+    this.dropMin = isThin ? CONFIG.thin_monkey.dropMin : CONFIG.normal.dropMin;
+    this.dropMax = isThin ? CONFIG.thin_monkey.dropMax : CONFIG.normal.dropMax;
+    this.color = isThin ? CONFIG.COLOR_THIN_MONKEY : CONFIG.COLOR_ENEMY;
   }
 
   update(dt: number, player?: Player, buildings?: Building[]) {

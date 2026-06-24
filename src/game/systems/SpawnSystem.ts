@@ -4,7 +4,7 @@ import type { EnemyType } from '../entities/Enemy';
 
 export class SpawnSystem {
   private spawnTimer: number = 0;
-  private spawnInterval: number = CONFIG.ENEMY_SPAWN_INTERVAL_BASE;
+  private spawnInterval: number = CONFIG.spawnIntervalBase;
   private wave: number = 1;
   enemiesToSpawn: number = 3;
   enemiesSpawnedThisWave: number = 0;
@@ -20,7 +20,7 @@ export class SpawnSystem {
       this.wave++;
       this.enemiesToSpawn += CONFIG.WAVE_ENEMY_COUNT_INCREMENT;
       this.enemiesSpawnedThisWave = 0;
-      this.spawnInterval = Math.max(500, CONFIG.ENEMY_SPAWN_INTERVAL_BASE - (this.wave - 1) * CONFIG.WAVE_SPAWN_REDUCTION);
+      this.spawnInterval = Math.max(500, CONFIG.spawnIntervalBase - (this.wave - 1) * CONFIG.WAVE_SPAWN_REDUCTION);
     }
 
     // 生成敌人
@@ -65,8 +65,8 @@ export class SpawnSystem {
     }
 
     const type: EnemyType =
-      this.wave >= CONFIG.THIN_MONKEY_MIN_WAVE &&
-      Math.random() < CONFIG.THIN_MONKEY_SPAWN_CHANCE
+      this.wave >= CONFIG.thin_monkey.minWave &&
+      Math.random() < CONFIG.thin_monkey.spawnChance
         ? 'thin_monkey'
         : 'normal';
 
@@ -79,7 +79,7 @@ export class SpawnSystem {
 
   reset() {
     this.spawnTimer = 0;
-    this.spawnInterval = CONFIG.ENEMY_SPAWN_INTERVAL_BASE;
+    this.spawnInterval = CONFIG.spawnIntervalBase;
     this.wave = 1;
     this.enemiesToSpawn = 3;
     this.enemiesSpawnedThisWave = 0;

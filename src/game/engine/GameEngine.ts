@@ -157,7 +157,7 @@ export class GameEngine {
     // 建造
     this.buildingSystem.update(dt);
     if (this.input.buildType && this.input.mouseClicked) {
-      const cost = this.input.buildType === 'wall' ? CONFIG.WALL_COST : CONFIG.TURRET_COST;
+      const cost = this.input.buildType === 'wall' ? CONFIG.wall.cost : CONFIG.turret.cost;
       if (this.materials >= cost) {
         const success = this.buildingSystem.build(
           this.input.buildType,
@@ -349,7 +349,7 @@ export class GameEngine {
 
     // 绘制建造预览
     if (this.input.buildType) {
-      const cost = this.input.buildType === 'wall' ? CONFIG.WALL_COST : CONFIG.TURRET_COST;
+      const cost = this.input.buildType === 'wall' ? CONFIG.wall.cost : CONFIG.turret.cost;
       const canBuild =
         this.buildingSystem.canBuildAt(
           this.input.mouseWorldX,
