@@ -5,7 +5,9 @@ import { getDistance } from './Collision';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/Enemy';
 import { Bullet } from '../entities/Bullet';
+import { BileProjectile } from '../entities/BileProjectile';
 import { FloatingText } from '../entities/FloatingText';
+import { ExplosionEffect } from '../entities/ExplosionEffect';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { BuildingSystem } from '../systems/BuildingSystem';
 import { UIRenderer } from '../systems/UIRenderer';
@@ -18,7 +20,9 @@ export class GameEngine {
   player: Player;
   enemies: Enemy[] = [];
   bullets: Bullet[] = [];
+  bileProjectiles: BileProjectile[] = [];
   floatingTexts: FloatingText[] = [];
+  explosionEffects: ExplosionEffect[] = [];
   spawnSystem: SpawnSystem;
   buildingSystem: BuildingSystem;
   uiRenderer: UIRenderer;
@@ -84,7 +88,9 @@ export class GameEngine {
     this.stop();
     this.enemies = [];
     this.bullets = [];
+    this.bileProjectiles = [];
     this.floatingTexts = [];
+    this.explosionEffects = [];
     this.killCount = 0;
     this.survivalTime = 0;
     this.materials = CONFIG.MATERIALS_INITIAL;
@@ -180,7 +186,9 @@ export class GameEngine {
     // 更新敌人
     const allBuildings = this.buildingSystem.buildings;
     for (const enemy of this.enemies) {
-      enemy.update(dt, this.player, allBuildings);
+      enemy.update(dt, this.player, allBuildings, (x, y, angle, damage) => {
+        this.bileProjectiles.push(new BileProjectile(x, y, angle, damage));
+      });
     }
 
     // 更新机枪塔
@@ -237,11 +245,15 @@ export class GameEngine {
             enemy.centerX, enemy.centerY
           );
           if (dist < enemy.width / 2 + bullet.width / 2) {
+            const wasAlive = enemy.alive;
             enemy.takeDamage(bullet.damage);
             bullet.alive = false;
-            if (!enemy.alive) {
+            if (wasAlive && !enemy.alive) {
               this.killCount++;
               this.addMaterialDrop(enemy);
+              if (enemy.enemyType === 'boomer') {
+                this.triggerBoomerExplosion(enemy.centerX, enemy.centerY);
+              }
             }
             break;
           }
@@ -255,11 +267,15 @@ export class GameEngine {
             enemy.centerX, enemy.centerY
           );
           if (dist < enemy.width / 2 + bullet.width / 2) {
+            const wasAlive = enemy.alive;
             enemy.takeDamage(bullet.damage);
             bullet.alive = false;
-            if (!enemy.alive) {
+            if (wasAlive && !enemy.alive) {
               this.killCount++;
               this.addMaterialDrop(enemy);
+              if (enemy.enemyType === 'boomer') {
+                this.triggerBoomerExplosion(enemy.centerX, enemy.centerY);
+              }
             }
             break;
           }
@@ -268,10 +284,53 @@ export class GameEngine {
 
     }
 
+    // 更新 Boomer 胆汁弹体
+    for (const bile of this.bileProjectiles) {
+      bile.update(dt);
+
+      if (!bile.alive) continue;
+
+      // 命中玩家
+      if (this.player.alive) {
+        const dist = getDistance(
+          bile.centerX, bile.centerY,
+          this.player.centerX, this.player.centerY
+        );
+        if (dist < this.player.width / 2 + bile.width / 2) {
+          this.player.takeDamage(bile.damage);
+          this.player.invulnerable = 300;
+          bile.alive = false;
+          continue;
+        }
+      }
+
+      // 命中建筑
+      for (const b of allBuildings) {
+        if (!b.alive) continue;
+        if (
+          bile.centerX > b.x &&
+          bile.centerX < b.x + b.width &&
+          bile.centerY > b.y &&
+          bile.centerY < b.y + b.height
+        ) {
+          b.takeDamage(bile.damage * 2);
+          bile.alive = false;
+          break;
+        }
+      }
+    }
+
+    // 更新爆炸特效
+    for (const effect of this.explosionEffects) {
+      effect.update(dt);
+    }
+
     // 清理死亡实体
     this.enemies = this.enemies.filter(e => e.alive);
     this.bullets = this.bullets.filter(b => b.alive);
+    this.bileProjectiles = this.bileProjectiles.filter(bp => bp.alive);
     this.floatingTexts = this.floatingTexts.filter(t => t.alive);
+    this.explosionEffects = this.explosionEffects.filter(e => e.alive);
     this.buildingSystem.cleanup();
 
     // 检查游戏结束
@@ -337,6 +396,16 @@ export class GameEngine {
     // 绘制子弹
     for (const bullet of this.bullets) {
       bullet.render(ctx, this.cameraX, this.cameraY);
+    }
+
+    // 绘制 Boomer 胆汁弹体
+    for (const bile of this.bileProjectiles) {
+      bile.render(ctx, this.cameraX, this.cameraY);
+    }
+
+    // 绘制 Boomer 死亡爆炸特效
+    for (const effect of this.explosionEffects) {
+      effect.render(ctx, this.cameraX, this.cameraY);
     }
 
     // 绘制浮动文字特效（在最上层）
@@ -426,6 +495,35 @@ export class GameEngine {
         new FloatingText(enemy.centerX, enemy.centerY, `+${amount}`)
       );
     }
+  }
+
+  // Boomer 死亡后爆炸，对范围内玩家和建筑造成伤害
+  private triggerBoomerExplosion(x: number, y: number) {
+    const radius = CONFIG.boomer.explosionRadius;
+    const damage = CONFIG.boomer.explosionDamage;
+
+    // 伤害玩家
+    if (this.player.alive) {
+      const dist = getDistance(x, y, this.player.centerX, this.player.centerY);
+      if (dist <= radius) {
+        this.player.takeDamage(damage);
+        this.player.invulnerable = 300;
+      }
+    }
+
+    // 伤害建筑
+    for (const b of this.buildingSystem.buildings) {
+      if (!b.alive) continue;
+      const dist = getDistance(x, y, b.centerX, b.centerY);
+      if (dist <= radius) {
+        b.takeDamage(damage * 2); // 对建筑伤害更高
+      }
+    }
+
+    // 爆炸视觉特效（绿色透明圆圈，范围等于伤害范围）
+    this.explosionEffects.push(
+      new ExplosionEffect(x, y, radius)
+    );
   }
 
   selectBuildType(type: BuildType) {

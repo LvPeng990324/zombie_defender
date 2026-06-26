@@ -5,7 +5,7 @@ import type { Player } from './Player';
 import type { Building } from './Building';
 import type { Wall } from './Wall';
 
-export type EnemyType = 'normal' | 'thin_monkey' | 'fat';
+export type EnemyType = 'normal' | 'thin_monkey' | 'fat' | 'boomer';
 
 interface EnemyConfig {
   size: number;
@@ -16,6 +16,11 @@ interface EnemyConfig {
   dropMin: number;
   dropMax: number;
   color: string;
+  attackRange?: number;
+  attackCooldown?: number;
+  projectileDamage?: number;
+  explosionRadius?: number;
+  explosionDamage?: number;
 }
 
 const ENEMY_CONFIG_MAP: Record<EnemyType, EnemyConfig> = {
@@ -49,6 +54,21 @@ const ENEMY_CONFIG_MAP: Record<EnemyType, EnemyConfig> = {
     dropMax: CONFIG.fat.dropMax,
     color: CONFIG.COLOR_FAT,
   },
+  boomer: {
+    size: CONFIG.boomer.size,
+    hp: CONFIG.boomer.hp,
+    speed: CONFIG.boomer.speed,
+    damage: CONFIG.boomer.damage,
+    dropChance: CONFIG.boomer.dropChance,
+    dropMin: CONFIG.boomer.dropMin,
+    dropMax: CONFIG.boomer.dropMax,
+    color: CONFIG.COLOR_BOOMER,
+    attackRange: CONFIG.boomer.attackRange,
+    attackCooldown: CONFIG.boomer.attackCooldown,
+    projectileDamage: CONFIG.boomer.projectileDamage,
+    explosionRadius: CONFIG.boomer.explosionRadius,
+    explosionDamage: CONFIG.boomer.explosionDamage,
+  },
 };
 
 export class Enemy extends Entity {
@@ -60,6 +80,7 @@ export class Enemy extends Entity {
   dropMax: number;
   color: string;
   attackCooldown: number = 0;
+  boomerAttackCooldown: number = 0;
   vx: number = 0;
   vy: number = 0;
   private targetX: number = 0;
@@ -79,7 +100,12 @@ export class Enemy extends Entity {
     this.color = cfg.color;
   }
 
-  update(dt: number, player?: Player, buildings?: Building[]) {
+  update(
+    dt: number,
+    player?: Player,
+    buildings?: Building[],
+    onShootBile?: (x: number, y: number, angle: number, damage: number) => void
+  ) {
     if (!this.alive) return;
 
     this.targetUpdateTimer -= dt;
@@ -89,6 +115,27 @@ export class Enemy extends Entity {
       this.targetUpdateTimer = 500; // 每500ms重新评估目标
       if (player && buildings) {
         this.chooseTarget(player, buildings);
+      }
+    }
+
+    // Boomer 远程喷射胆汁攻击
+    if (this.enemyType === 'boomer' && player && buildings) {
+      this.boomerAttackCooldown -= dt;
+      if (this.boomerAttackCooldown <= 0) {
+        const target = this.findBileTarget(player, buildings);
+        if (target) {
+          const angle = Math.atan2(
+            target.centerY - this.centerY,
+            target.centerX - this.centerX
+          );
+          onShootBile?.(
+            this.centerX,
+            this.centerY,
+            angle,
+            CONFIG.boomer.projectileDamage
+          );
+          this.boomerAttackCooldown = CONFIG.boomer.attackCooldown;
+        }
       }
     }
 
@@ -227,6 +274,38 @@ export class Enemy extends Entity {
     }
   }
 
+  /**
+   * Boomer 寻找胆汁攻击目标：优先玩家，其次射程内最近的建筑。
+   */
+  private findBileTarget(player: Player, buildings: Building[]): Entity | null {
+    const range = CONFIG.boomer.attackRange;
+
+    if (player.alive) {
+      const distToPlayer = getDistance(
+        this.centerX,
+        this.centerY,
+        player.centerX,
+        player.centerY
+      );
+      if (distToPlayer <= range) {
+        return player;
+      }
+    }
+
+    let closest: Building | null = null;
+    let closestDist = Infinity;
+    for (const b of buildings) {
+      if (!b.alive) continue;
+      const d = getDistance(this.centerX, this.centerY, b.centerX, b.centerY);
+      if (d <= range && d < closestDist) {
+        closestDist = d;
+        closest = b;
+      }
+    }
+
+    return closest;
+  }
+
   private isOnPathTo(wall: Wall, player: Player): boolean {
     // 简单检查：墙体是否在敌人到玩家的直线路径附近
     const ex = this.centerX, ey = this.centerY;
@@ -293,6 +372,20 @@ export class Enemy extends Entity {
     ctx.quadraticCurveTo(x, y, x + r, y);
     ctx.closePath();
     ctx.fill();
+
+    // Boomer 额外绘制膨胀的胆汁囊
+    if (this.enemyType === 'boomer') {
+      ctx.fillStyle = CONFIG.COLOR_BOOMER_DARK;
+      ctx.beginPath();
+      ctx.arc(
+        screenX + this.width * 0.5,
+        screenY + this.height * 0.55,
+        this.width * 0.22,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
 
     // 眼睛（朝向目标），位置按体型比例缩放
     ctx.fillStyle = CONFIG.COLOR_ENEMY_EYE;

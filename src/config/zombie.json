@@ -30,5 +30,23 @@
     "dropMax": 15,
     "spawnChance": 0.2,
     "minWave": 4
+  },
+  "boomer": {
+    "hp": 150,
+    "speed": 0.6,
+    "damage": 25,
+    "size": 42,
+    "dropChance": 0.6,
+    "dropMin": 8,
+    "dropMax": 20,
+    "spawnChance": 0.15,
+    "minWave": 5,
+    "attackRange": 180,
+    "attackCooldown": 2000,
+    "projectileSpeed": 3.5,
+    "projectileSize": 10,
+    "projectileDamage": 15,
+    "explosionRadius": 100,
+    "explosionDamage": 50
   }
 }

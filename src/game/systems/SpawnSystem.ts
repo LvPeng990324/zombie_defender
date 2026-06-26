@@ -9,6 +9,7 @@ export class SpawnSystem {
   enemiesToSpawn: number = 3;
   enemiesSpawnedThisWave: number = 0;
   waveTimer: number = 0;
+  private customWaveQueue: EnemyType[] = [];
 
   update(dt: number, callback: (enemy: Enemy) => void) {
     this.spawnTimer += dt;
@@ -21,6 +22,7 @@ export class SpawnSystem {
       this.enemiesToSpawn += CONFIG.WAVE_ENEMY_COUNT_INCREMENT;
       this.enemiesSpawnedThisWave = 0;
       this.spawnInterval = Math.max(500, CONFIG.spawnIntervalBase - (this.wave - 1) * CONFIG.WAVE_SPAWN_REDUCTION);
+      this.applyWaveConfig();
     }
 
     // 生成敌人
@@ -30,10 +32,25 @@ export class SpawnSystem {
       const enemy = this.spawnEnemy();
       callback(enemy);
     }
+  }
 
-    // 每波结束后重置
-    if (this.enemiesSpawnedThisWave >= this.enemiesToSpawn && this.spawnTimer >= this.spawnInterval * 2) {
-      this.enemiesSpawnedThisWave = 0;
+  private applyWaveConfig() {
+    const customWaves = CONFIG.customWaves as unknown as Record<string, Record<string, number>> | undefined;
+    const waveKey = String(this.wave);
+    const config = customWaves?.[waveKey];
+
+    if (config) {
+      const queue: EnemyType[] = [];
+      for (const [type, count] of Object.entries(config)) {
+        const enemyType = type as EnemyType;
+        for (let i = 0; i < count; i++) {
+          queue.push(enemyType);
+        }
+      }
+      this.customWaveQueue = queue;
+      this.enemiesToSpawn = queue.length;
+    } else {
+      this.customWaveQueue = [];
     }
   }
 
@@ -64,14 +81,31 @@ export class SpawnSystem {
         y = 0;
     }
 
-    let type: EnemyType = 'normal';
-    if (this.wave >= CONFIG.fat.minWave && Math.random() < CONFIG.fat.spawnChance) {
-      type = 'fat';
-    } else if (this.wave >= CONFIG.thin_monkey.minWave && Math.random() < CONFIG.thin_monkey.spawnChance) {
-      type = 'thin_monkey';
+    const type = this.chooseEnemyType();
+    return new Enemy(x, y, type);
+  }
+
+  private chooseEnemyType(): EnemyType {
+    // 优先使用自定义波次队列
+    if (this.customWaveQueue.length > 0) {
+      return this.customWaveQueue.shift()!;
     }
 
-    return new Enemy(x, y, type);
+    // 否则按概率随机生成
+    const roll = Math.random();
+    const boomerThreshold = this.wave >= CONFIG.boomer.minWave ? CONFIG.boomer.spawnChance : 0;
+    const fatThreshold = boomerThreshold + (this.wave >= CONFIG.fat.minWave ? CONFIG.fat.spawnChance : 0);
+    const thinMonkeyThreshold = fatThreshold + (this.wave >= CONFIG.thin_monkey.minWave ? CONFIG.thin_monkey.spawnChance : 0);
+
+    if (roll < boomerThreshold) {
+      return 'boomer';
+    } else if (roll < fatThreshold) {
+      return 'fat';
+    } else if (roll < thinMonkeyThreshold) {
+      return 'thin_monkey';
+    }
+
+    return 'normal';
   }
 
   getWave(): number {
@@ -85,5 +119,7 @@ export class SpawnSystem {
     this.enemiesToSpawn = 3;
     this.enemiesSpawnedThisWave = 0;
     this.waveTimer = 0;
+    this.customWaveQueue = [];
+    this.applyWaveConfig();
   }
 }

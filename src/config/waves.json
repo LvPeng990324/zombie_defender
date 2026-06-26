@@ -1,5 +1,15 @@
 {
   "WAVE_INTERVAL": 15000,
   "WAVE_SPAWN_REDUCTION": 200,
-  "WAVE_ENEMY_COUNT_INCREMENT": 1
+  "WAVE_ENEMY_COUNT_INCREMENT": 1,
+  "customWaves": {
+    "1": {
+      "normal": 2,
+      "boomer": 1
+    },
+    "2": {
+      "fat": 2,
+      "boomer": 2
+    }
+  }
 }
